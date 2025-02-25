@@ -4,13 +4,13 @@ Please fill this out and submit your work to Gradescope by the milestone deadlin
 
 ### Mesh Validator
 
-Tests 0-4 : half edges have all fields
-Test 5 : each half edge has two edges
-Test 6 : we can follow halfedges in a loop around a face back to the original one
-Test 7 : halfedges are twins of each other
-Test 8 : follow the halfedges around a vertex, they should share that vertex
-Test 9 : we have a disc around a vertex
-Test 10 : halfedges of same face share that face
+- Tests 0-4 : half edges have all fields
+- Test 5 : each half edge has two edges
+- Test 6 : we can follow halfedges in a loop around a face back to the original one
+- Test 7 : halfedges are twins of each other
+- Test 8 : follow the halfedges around a vertex, they should share that vertex
+- Test 9 : we have a disc around a vertex
+- Test 10 : halfedges of same face share that face
 
 ### Implementation Locations
 
