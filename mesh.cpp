@@ -98,9 +98,9 @@ void Mesh::buildHalfedges() {
     std::map<std::pair<int, int>, Edge*> e_list;
 
     for (Eigen::Vector3f &vpoint : _vertices) {
-        Vertex v;
-        v.pos = vpoint;
-        v_list.push_back(&v);
+        Vertex *v = new Vertex;
+        v->pos = vpoint;
+        v_list.push_back(v);
     }
 
     for(Eigen::Vector3i fvertices : _faces)
@@ -109,85 +109,119 @@ void Mesh::buildHalfedges() {
         int v2 = fvertices[1];
         int v3 = fvertices[2];
 
-        Face f;
-        Halfedge he1 /*1 to 2*/, he2 /*2 to 3*/, he3 /*3 to 1*/;
-        Edge e1 /*1 to 2*/, e2 /*2 to 3*/, e3 /*3 to 1*/;
-        Edge *pe1, *pe2, *pe3;
-        he1.face = &f;
-        he2.face = &f;
-        he3.face = &f;
+        Face *f = new Face;
+        Halfedge *he1 = new Halfedge /*1 to 2*/, *he2 = new Halfedge /*2 to 3*/, *he3 = new Halfedge /*3 to 1*/;
+        Edge *e1 = new Edge /*1 to 2*/, *e2 = new Edge/*2 to 3*/, *e3 = new Edge /*3 to 1*/;
+        he1->face = f;
+        he2->face = f;
+        he3->face = f;
+        f->halfedge = he1;
         if(e_list.find(std::make_pair(v1,v2)) == e_list.end()) {
-            e_list[std::make_pair(v1,v2)] = &e1;
-            pe1 = &e1;
+            e_list[std::make_pair(v1,v2)] = e1;
+            e_list[std::make_pair(v2,v1)] = e1;
         } else {
-            pe1 = e_list[std::make_pair(v1,v2)];
-            he1.twin = pe1->halfedge;
-            he1.twin->twin = &he1;
+            e1 = e_list[std::make_pair(v1,v2)];
+            he1->twin = e1->halfedge;
+            he1->twin->twin = he1;
         }
         if(e_list.find(std::make_pair(v2,v3)) == e_list.end()) {
-            e_list[std::make_pair(v2,v3)] = &e2;
-            pe2 = &e2;
+            e_list[std::make_pair(v2,v3)] = e2;
+            e_list[std::make_pair(v3,v2)] = e2;
         } else {
-            pe2 = e_list[std::make_pair(v2,v3)];
-            he2.twin = pe2->halfedge;
-            he2.twin->twin = &he2;
+            e2 = e_list[std::make_pair(v2,v3)];
+            he2->twin = e2->halfedge;
+            he2->twin->twin = he2;
         }
         if(e_list.find(std::make_pair(v3,v1)) == e_list.end()) {
-            e_list[std::make_pair(v3,v1)] = &e3;
-            pe3 = &e3;
+            e_list[std::make_pair(v3,v1)] = e3;
+            e_list[std::make_pair(v1,v3)] = e3;
         } else {
-            pe3 = e_list[std::make_pair(v3,v1)];
-            he3.twin = pe3->halfedge;
-            he3.twin->twin = &he3;
+            e3 = e_list[std::make_pair(v3,v1)];
+            he3->twin = e3->halfedge;
+            he3->twin->twin = he3;
         }
-        he1.edge = pe1;
-        he2.edge = pe2;
-        he3.edge = pe3;
+        he1->edge = e1;
+        he2->edge = e2;
+        he3->edge = e3;
 
-        e1.halfedge = &he1;
-        e2.halfedge = &he2;
-        e3.halfedge = &he3;
+        e1->halfedge = he1;
+        e2->halfedge = he2;
+        e3->halfedge = he3;
 
-        v_list[v1]->halfedge = &he1;
-        v_list[v2]->halfedge = &he2;
-        v_list[v3]->halfedge = &he3;
+        v_list[v1]->halfedge = he1;
+        v_list[v2]->halfedge = he2;
+        v_list[v3]->halfedge = he3;
 
-        he1.vertex = v_list[v1];
-        he2.vertex = v_list[v2];
-        he3.vertex = v_list[v3];
+        he1->vertex = v_list[v1];
+        he2->vertex = v_list[v2];
+        he3->vertex = v_list[v3];
 
-        he1.next = &he2;
-        he2.next = &he3;
-        he3.next = &he1;
+        he1->next = he2;
+        he2->next = he3;
+        he3->next = he1;
 
-        _halfedges.push_back(&he1);
-        _halfedges.push_back(&he2);
-        _halfedges.push_back(&he3);
+        _halfedges.push_back(he1);
+        _halfedges.push_back(he2);
+        _halfedges.push_back(he3);
     }
-
-    return;
 }
 
-void Mesh::exportHalfedges() {return;}
+void Mesh::exportHalfedges() {
+    std::map<Vertex*, int> v_list;
+    std::set<Face*> seen;
+    int v_idx = 0;
+
+    _vertices.clear();
+    _faces.clear();
+
+    for(Halfedge *h : _halfedges) {
+        if(seen.contains(h->face)) {continue;}
+        seen.insert(h->face);
+
+        Vertex *v1 = h->vertex;
+        Vertex *v2 = h->next->vertex;
+        Vertex *v3 = h->next->next->vertex;
+
+        if(!v_list.contains(v1)) {
+            v_list[v1] = v_idx;
+            v_idx++;
+            _vertices.push_back(v1->pos);
+        }
+
+        if(!v_list.contains(v2)) {
+            v_list[v2] = v_idx;
+            v_idx++;
+            _vertices.push_back(v2->pos);
+        }
+
+        if(!v_list.contains(v3)) {
+            v_list[v3] = v_idx;
+            v_idx++;
+            _vertices.push_back(v3->pos);
+        }
+
+        _faces.push_back(Eigen::Vector3i(v_list[v1], v_list[v2], v_list[v3]));
+    }
+}
 
 void validate(const Mesh &mesh) {
     const std::vector<Halfedge*> halfedges = mesh.getHalfedges();
 
     // Tests 0-4 : half edges have all fields
     for(Halfedge *h : halfedges) {
-        assert(h != NULL);
-        assert(h->edge != NULL);
-        assert(h->edge->halfedge != NULL);
+        assert(h != nullptr);
+        assert(h->edge != nullptr);
+        assert(h->edge->halfedge != nullptr);
 
-        assert(h->face != NULL);
-        assert(h->face->halfedge != NULL);
+        assert(h->face != nullptr);
+        assert(h->face->halfedge != nullptr);
 
-        assert(h->next != NULL);
+        assert(h->next != nullptr);
 
-        assert(h->twin != NULL);
+        assert(h->twin != nullptr);
 
-        assert(h->vertex != NULL);
-        assert(h->vertex->halfedge != NULL);
+        assert(h->vertex != nullptr);
+        assert(h->vertex->halfedge != nullptr);
     }
 
     // Test 5 : each half edge has two edges
