@@ -53,6 +53,8 @@ int main(int argc, char *argv[])
     Mesh m;
     m.loadFromFile(infile.toStdString());
 
+    validate(m);
+
     // Start timing
     auto t0 = std::chrono::high_resolution_clock::now();
 
