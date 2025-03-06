@@ -10,6 +10,7 @@ EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Matrix3f);
 EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(Eigen::Matrix3i);
 
 struct Halfedge;
+struct Vertex;
 
 class Mesh
 {
@@ -22,15 +23,25 @@ public:
     void loadFromFile(const std::string &filePath);
     void saveToFile(const std::string &filePath);
 
-    const std::vector<Halfedge*> getHalfedges() const {return _halfedges;}
+   std::unordered_map<Halfedge*, Halfedge*> getHalfedges() {return _halfedges;}
 
+   bool edgeFlip(Halfedge *halfedge);
+
+   Vertex *edgeSplit(Halfedge *halfedge);
+
+   bool edgeCollapse(Halfedge *halfedge);
+
+   void loopSubdivision(int n);
 private:
     std::vector<Eigen::Vector3f> _vertices;
     std::vector<Eigen::Vector3i> _faces;
-    std::vector<Halfedge*> _halfedges;
+    std::unordered_map<Halfedge*, Halfedge*> _halfedges;
 
     void buildHalfedges();
     void exportHalfedges();
+
+
+    void loopSubdivide();
 };
 
 struct Vertex {
@@ -40,6 +51,7 @@ struct Vertex {
 
 struct Edge {
     Halfedge *halfedge;
+    bool is_new;
 };
 
 struct Face {
@@ -54,4 +66,4 @@ struct Halfedge {
     Face *face;
 };
 
-void validate(const Mesh &mesh);
+void validate(Mesh &mesh);

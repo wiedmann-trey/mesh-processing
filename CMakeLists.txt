@@ -25,6 +25,9 @@ add_executable(${PROJECT_NAME}
     
     mesh.h
     util/tiny_obj_loader.h
+
+    atomic_mesh_ops.cpp
+    loop_subdivision.cpp
 )
 
 # Specifies libraries to be linked (Qt components, glew, etc)

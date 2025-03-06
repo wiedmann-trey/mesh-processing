@@ -53,17 +53,15 @@ int main(int argc, char *argv[])
     Mesh m;
     m.loadFromFile(infile.toStdString());
 
-    validate(m);
-
     // Start timing
     auto t0 = std::chrono::high_resolution_clock::now();
 
     // Switch on method
     if (method == "subdivide") {
         int numIterations = settings.value("Parameters/args1").toInt();
-
-        // TODO
-
+        validate(m);
+        m.loopSubdivision(numIterations);
+        validate(m);
     } else if (method == "simplify") {
 
         // TODO
@@ -80,6 +78,10 @@ int main(int argc, char *argv[])
 
         // TODO
 
+    } else if (method == "test") {
+        validate(m);
+        m.edgeSplit(m.getHalfedges().begin()->first);
+        validate(m);
     } else {
 
         std::cerr << "Error: Unknown method \"" << method.toUtf8().constData() << "\"" << std::endl;

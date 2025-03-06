@@ -160,9 +160,9 @@ void Mesh::buildHalfedges() {
         he2->next = he3;
         he3->next = he1;
 
-        _halfedges.push_back(he1);
-        _halfedges.push_back(he2);
-        _halfedges.push_back(he3);
+        _halfedges[he1]=he1;
+        _halfedges[he2]=he2;
+        _halfedges[he3]=he3;
     }
 }
 
@@ -174,7 +174,8 @@ void Mesh::exportHalfedges() {
     _vertices.clear();
     _faces.clear();
 
-    for(Halfedge *h : _halfedges) {
+    for(auto &pair : _halfedges) {
+        Halfedge *h = pair.first;
         if(seen.contains(h->face)) {continue;}
         seen.insert(h->face);
 
@@ -204,11 +205,12 @@ void Mesh::exportHalfedges() {
     }
 }
 
-void validate(const Mesh &mesh) {
-    const std::vector<Halfedge*> halfedges = mesh.getHalfedges();
+void validate(Mesh &mesh) {
+    std::unordered_map<Halfedge*, Halfedge*> halfedges = mesh.getHalfedges();
 
     // Tests 0-4 : half edges have all fields
-    for(Halfedge *h : halfedges) {
+    for(auto &pair : halfedges) {
+        Halfedge *h = pair.first;
         assert(h != nullptr);
         assert(h->edge != nullptr);
         assert(h->edge->halfedge != nullptr);
@@ -226,7 +228,8 @@ void validate(const Mesh &mesh) {
 
     // Test 5 : each half edge has two edges
     std::map<Edge*, int> seen;
-    for(Halfedge *h : halfedges) {
+    for(auto &pair : halfedges) {
+        Halfedge *h = pair.first;
         seen[h->edge] += 1;
     }
 
@@ -235,17 +238,20 @@ void validate(const Mesh &mesh) {
     }
 
     // Test 6 : we can follow halfedges in a loop around a face back to the original one
-    for (Halfedge *h : halfedges) {
+    for(auto &pair : halfedges) {
+        Halfedge *h = pair.first;
         assert(h->next->next->next == h);
     }
 
     // Test 7 : halfedges are twins of each other
-    for (Halfedge *h : halfedges) {
+    for(auto &pair : halfedges) {
+        Halfedge *h = pair.first;
         assert(h->twin->twin == h);
     }
 
     // Test 8 : follow the halfedges around a vertex, they should share that vertex
-    for (Halfedge *h : halfedges) {
+    for(auto &pair : halfedges) {
+        Halfedge *h = pair.first;
         Vertex *v = h->vertex;
         Halfedge *start = h;
         do {
@@ -258,11 +264,13 @@ void validate(const Mesh &mesh) {
     // Test 9 : we have a disc around a vertex
     // (if we follow the disc around that vertex, we see all of the halfedges that originate from it)
     std::map<Vertex*, std::set<Halfedge*>> neighborhoods;
-    for(Halfedge *h : halfedges) {
+    for(auto &pair : halfedges) {
+        Halfedge *h = pair.first;
         neighborhoods[h->vertex].insert(h);
     }
 
-    for (Halfedge *h : halfedges) {
+    for(auto &pair : halfedges) {
+        Halfedge *h = pair.first;
         std::set<Halfedge*> neighborhood;
 
         Vertex *v = h->vertex;
@@ -277,7 +285,8 @@ void validate(const Mesh &mesh) {
     }
 
     // Test 10 : halfedges of same face share that face
-    for (Halfedge *h : halfedges) {
+    for(auto &pair : halfedges) {
+        Halfedge *h = pair.first;
         Face *f = h->face;
         assert(h->next->face == f);
         assert(h->next->next->face == f);
