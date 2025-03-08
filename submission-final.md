@@ -22,14 +22,14 @@ Please do not attempt to duplicate the given reference images; we have tools to 
 
 | `.ini` File To Produce Output |                     Expected Output                      |                                   Your Output                                   |
 | :---------------------------: | :------------------------------------------------------: | :-----------------------------------------------------------------------------: |
-|  subdivide_icosahedron_4.ini  | ![](ground_truth_pngs/final/subdivide_icosahedron_4.png) | ![Place screenshot of student_outputs/final/subdivide_icosahedron_4.obj here]() |
-|   simplify_sphere_full.ini    |  ![](ground_truth_pngs/final/simplify_sphere_full.png)   |  ![Place screenshot of student_outputs/final/simplify_sphere_full.obj here]()   |
-|       simplify_cow.ini        |      ![](ground_truth_pngs/final/simplify_cow.png)       |      ![Place screenshot of student_outputs/final/simplify_cow.obj here]()       |
+|  subdivide_icosahedron_4.ini  | ![](ground_truth_pngs/final/subdivide_icosahedron_4.png) | ![Place screenshot of student_outputs/final/subdivide_icosahedron_4.obj here](student_outputs/final/subdivide_icosohedron_4.png) |
+|   simplify_sphere_full.ini    |  ![](ground_truth_pngs/final/simplify_sphere_full.png)   |  ![Place screenshot of student_outputs/final/simplify_sphere_full.obj here](student_outputs/final/simplify_sphere.png)   |
+|       simplify_cow.ini        |      ![](ground_truth_pngs/final/simplify_cow.png)       |      ![Place screenshot of student_outputs/final/simplify_cow.obj here](student_outputs/final/simplify_cow.png)       |
 
 Output for Isotropic Remeshing (Note: if you did not implement this you can just skip this part)
 | `.ini` File To Produce Output | Input Mesh .png | Remeshed Mesh .png |
 | :---------------------------------------: | :--------------------------------------------------: | :-------------------------------------------------: |
-| <Path to your .ini file> | ![Place screenshot of your input mesh here]() | ![Place screenshot of your remeshed mesh here]() |
+| <Path to your .ini file> | ![Place screenshot of your input mesh here](student_outputs/final/bunny_before.png) | ![Place screenshot of your remeshed mesh here](student_outputs/final/bunny_after.png) |
 
 Output for Bilateral Mesh Denoising (Note: if you did not implement this you can just skip this part)
 | `.ini` File To Produce Output | Noisy Mesh .png | Denoised Mesh .png |
@@ -45,11 +45,11 @@ Output for any other Geometry Processing Functions (Note: if you did not impleme
 
 Please list the lines where the implementations of these features start:
 
-- [Mesh data structure & validator]()
-- [Loop Subdivision]()
-- [Quadric Error Simplification]()
-- Another Geometry Processing Function
-- Any extra credit function
+- [Mesh data structure](https://github.com/brown-cs-224/mesh-wiedmann-trey/blob/f082cc77bf22cef2d2dcdd3c63c72a0fc173c7d8/mesh.h#L52)
+- [Mesh validator](https://github.com/brown-cs-224/mesh-wiedmann-trey/blob/f082cc77bf22cef2d2dcdd3c63c72a0fc173c7d8/mesh.cpp#L208)
+- [Loop Subdivision](https://github.com/brown-cs-224/mesh-wiedmann-trey/blob/f082cc77bf22cef2d2dcdd3c63c72a0fc173c7d8/loop_subdivision.cpp#L11)
+- [Quadric Error Simplification](https://github.com/brown-cs-224/mesh-wiedmann-trey/blob/f082cc77bf22cef2d2dcdd3c63c72a0fc173c7d8/quadric_error_simplification.cpp#L94)
+- [Remeshing](https://github.com/brown-cs-224/mesh-wiedmann-trey/blob/f082cc77bf22cef2d2dcdd3c63c72a0fc173c7d8/remeshing.cpp#L54)
 
 ### Design Choices
 
