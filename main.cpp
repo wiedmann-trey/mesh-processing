@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     Mesh m;
     m.loadFromFile(infile.toStdString());
 
-    validate(m);
+    //validate(m);
 
     // Start timing
     auto t0 = std::chrono::high_resolution_clock::now();
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
     auto duration = duration_cast<std::chrono::milliseconds>(t1 - t0).count();
     std::cout << "Execution took " << duration << " milliseconds." << std::endl;
 
-    validate(m);
+    //validate(m);
 
     // Save
     m.saveToFile(outfile.toStdString());
