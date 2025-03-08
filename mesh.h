@@ -32,6 +32,10 @@ public:
    bool edgeCollapse(Halfedge *halfedge);
 
    void loopSubdivision(int n);
+
+   void remesh(int n, float damping);
+
+   void quadricErrorSimplification(int n);
 private:
     std::vector<Eigen::Vector3f> _vertices;
     std::vector<Eigen::Vector3i> _faces;
@@ -39,9 +43,10 @@ private:
 
     void buildHalfedges();
     void exportHalfedges();
-
-
     void loopSubdivide();
+    bool canCollapse(Halfedge *h);
+
+    void remesh_iteration(float damping);
 };
 
 struct Vertex {
@@ -67,3 +72,5 @@ struct Halfedge {
 };
 
 void validate(Mesh &mesh);
+
+int degree(Vertex *v);

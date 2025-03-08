@@ -53,23 +53,22 @@ int main(int argc, char *argv[])
     Mesh m;
     m.loadFromFile(infile.toStdString());
 
+    validate(m);
+
     // Start timing
     auto t0 = std::chrono::high_resolution_clock::now();
 
     // Switch on method
     if (method == "subdivide") {
         int numIterations = settings.value("Parameters/args1").toInt();
-        validate(m);
         m.loopSubdivision(numIterations);
-        validate(m);
     } else if (method == "simplify") {
-
-        // TODO
-
+        int numFaces = settings.value("Parameters/args1").toInt();
+        m.quadricErrorSimplification(numFaces);
     } else if (method == "remesh") {
-
-        // TODO
-
+        int numIterations = settings.value("Parameters/args1").toInt();
+        float damping = settings.value("Parameters/args2").toFloat();
+        m.remesh(numIterations, damping);
     } else if (method == "noise") {
 
         // TODO
@@ -79,9 +78,7 @@ int main(int argc, char *argv[])
         // TODO
 
     } else if (method == "test") {
-        validate(m);
-        m.edgeSplit(m.getHalfedges().begin()->first);
-        validate(m);
+        m.edgeCollapse(m.getHalfedges().begin()->first);
     } else {
 
         std::cerr << "Error: Unknown method \"" << method.toUtf8().constData() << "\"" << std::endl;
@@ -92,6 +89,8 @@ int main(int argc, char *argv[])
     auto t1 = std::chrono::high_resolution_clock::now();
     auto duration = duration_cast<std::chrono::milliseconds>(t1 - t0).count();
     std::cout << "Execution took " << duration << " milliseconds." << std::endl;
+
+    validate(m);
 
     // Save
     m.saveToFile(outfile.toStdString());

@@ -28,6 +28,8 @@ add_executable(${PROJECT_NAME}
 
     atomic_mesh_ops.cpp
     loop_subdivision.cpp
+    quadric_error_simplification.cpp
+    remeshing.cpp
 )
 
 # Specifies libraries to be linked (Qt components, glew, etc)

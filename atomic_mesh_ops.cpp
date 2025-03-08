@@ -1,4 +1,5 @@
 #include "mesh.h"
+#include <unordered_set>
 
 int degree(Vertex *v) {
     Halfedge *start = v->halfedge;
@@ -10,6 +11,33 @@ int degree(Vertex *v) {
     }
     while(h != start);
     return d;
+}
+
+bool Mesh::canCollapse(Halfedge *halfedge) {
+    Halfedge *twin = halfedge->twin;
+
+    std::unordered_set<Vertex*> hset;
+    std::unordered_set<Vertex*> tset;
+
+    Halfedge *h = halfedge;
+    do {
+        hset.insert(h->twin->vertex);
+        h = h->twin->next;
+    }
+    while(h != halfedge);
+
+    h = twin;
+    do {
+        tset.insert(h->twin->vertex);
+        h = h->twin->next;
+    }
+    while(h != twin);
+
+    for(Vertex* v : hset) {
+        if(tset.contains(v) && degree(v) <= 3) return false;
+    }
+
+    return true;
 }
 
 bool Mesh::edgeFlip(Halfedge *halfedge) {
@@ -62,7 +90,7 @@ bool Mesh::edgeCollapse(Halfedge *halfedge) {
     Halfedge *twin = halfedge->twin;
 
     // check shared neighbor degrees
-    if(degree(twin->next->next->vertex) <= 3 || degree(halfedge->next->next->vertex) <= 3) {
+    if(!canCollapse(halfedge)) {
         return false;
     }
 
@@ -76,6 +104,7 @@ bool Mesh::edgeCollapse(Halfedge *halfedge) {
     Halfedge *delete2 = twin->next->next;
 
     // reassign vertices for edges that have their vertex deleted
+    Vertex *delete_vertex = twin->vertex;
     Halfedge *start = twin;
     Halfedge *h = start;
     do {
@@ -130,14 +159,20 @@ bool Mesh::edgeCollapse(Halfedge *halfedge) {
     _halfedges.erase(twin);
 
     delete faceDelete1;
-    delete faceDelete2;
-    delete twin->vertex;
+    if(faceDelete2 != faceDelete1) delete faceDelete2;
+    delete delete_vertex;
     delete delete1->edge;
     delete delete1->twin;
+    bool delete_delete2 = true;
+    if(delete1->twin == delete2) {
+        delete_delete2 = false;
+    }
     delete delete1;
-    delete delete2->edge;
-    delete delete2->twin;
-    delete delete2;
+    if(delete_delete2) {
+        delete delete2->edge;
+        delete delete2->twin;
+        delete delete2;
+    }
     delete halfedge->edge;
     delete twin;
     delete halfedge;

@@ -53,18 +53,31 @@ Please list the lines where the implementations of these features start:
 
 ### Design Choices
 
+Each feature is in their own cpp file, I broke out the atomic operations into a separate file.
+
 #### Mesh Data Structure
 
-Describe your mesh data structure here.
+I have a standard halfedge implementation. The mesh has a std::unordered map of halfedges. Each halfedge has a next, twin, face, vertex, and edge. Vertices, faces, and edges point to a corresponding halfedge.
 
 #### Mesh Validator
 
-Describe what your mesh validator checks for here. This can be a list.
+- Tests 0-4 : half edges have all fields (not null ptr)
+- Test 5 : each half edge has two edges
+- Test 6 : we can follow halfedges in a loop around a face back to the original one
+- Test 7 : halfedges are twins of each other
+- Test 8 : follow the halfedges around a vertex, they should share that vertex
+- Test 9 : we have a disc around a vertex
+- Test 10 : halfedges of same face share that face
 
 #### Run Time/Efficency
+For atomic operations, halfedges let us perform them in constant time relatively easily.
 
-Describe how you achieved efficient asymptotic running times for your geometry processing functions, including the data structures you used.
+For loop subdivision, I use unordered maps to associate the positions of surrounding vertices with each edge and vertex, so I can access these properties in constant time after splitting and flipping to update postions. Thus, each iteration of loop subdivision should run in linear time.
+
+For quadric error simplification, I mantain a priority queue that is actually a multimap from floats to pairs of edges and 3d points. The float is the error for collapsing, the edge is the edge that would be collapsed, and the point is the point to collapse that edge to. Because we can remove from the multimap in log time, the overall algorithm should run in nlogn time. 
 
 ### Collaboration/References
+Worked alone.
 
 ### Known Bugs
+I implemented remeshing, but having trouble with the collapsing edges step, so I commented that out. The remeshing thus ends up with a lot more faces than before.
